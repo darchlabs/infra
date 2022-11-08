@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synchronizers-v2-api
+spec:
+  selector:
+    matchLabels:
+      app: synchronizers-v2-deployment
+  template:
+    metadata:
+      labels:
+        app: synchronizers-v2-deployment
+    spec:
+      # serviceAccountName: synchronizers-v2
+      containers:
+        - name: synchronizers-v2
+          image: darchlabs/synchronizer-v2:1.0.0
+          envFrom:
+            - configMapRef:
+                name: synchronizers-v2-config
+          ports:
+            - containerPort: 5005
