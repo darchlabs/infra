@@ -4,5 +4,5 @@ metadata:
   name: reporter-synchronizers-config
 data:
   DATABASE_URL: "redis:6379"
-  SERVICE_URL: "http://synchronizers-v2:5005"
+  SERVICE_URL: "http://synchronizers-v2:5555"
   SERVICE_TYPE: "synchronizers"
