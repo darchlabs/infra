@@ -4,7 +4,7 @@ metadata:
   name: synchronizers-v2
 spec:
   ports:
-    - port: 5005
+    - port: 5555
       name: http
   selector:
     app: synchronizers-v2-deployment

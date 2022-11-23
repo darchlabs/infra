@@ -14,9 +14,9 @@ spec:
       # serviceAccountName: synchronizers-v2
       containers:
         - name: synchronizers-v2
-          image: darchlabs/synchronizer-v2:1.0.0
+          image: darchlabs/synchronizer-v2:1.2.0
           envFrom:
             - configMapRef:
                 name: synchronizers-v2-config
           ports:
-            - containerPort: 5005
+            - containerPort: 5555
