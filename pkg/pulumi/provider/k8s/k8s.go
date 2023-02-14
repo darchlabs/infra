@@ -8,13 +8,13 @@ import (
 
 func Run(ctx *pulumi.Context, p *project.Project, env env.Env) error {
 	// 02.- create namespace
-	err := Namespace(ctx, p.Name, p.Environment)
+	namespace, err := Namespace(ctx, p.Name, p.Environment)
 	if err != nil {
 		return err
 	}
 
 	// 05.- create synchronizers
-	err = Synchonizers(ctx, env)
+	err = Synchonizers(ctx, env, namespace)
 	if err != nil {
 		return err
 	}

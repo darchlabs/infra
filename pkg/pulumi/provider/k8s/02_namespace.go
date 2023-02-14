@@ -10,7 +10,7 @@ import (
 )
 
 // Create namespace for k8s cluster
-func Namespace(ctx *pulumi.Context, projectName string, environment project.Environment) error {
+func Namespace(ctx *pulumi.Context, projectName string, environment project.Environment) (string, error) {
 	name := fmt.Sprintf("dl-%s-ns", projectName)
 	args := &corev1.NamespaceArgs{
 		Metadata: &metav1.ObjectMetaArgs{
@@ -20,8 +20,8 @@ func Namespace(ctx *pulumi.Context, projectName string, environment project.Envi
 
 	_, err := corev1.NewNamespace(ctx, name, args)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return name, nil
 }

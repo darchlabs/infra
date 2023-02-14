@@ -10,21 +10,21 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-func Synchonizers(ctx *pulumi.Context, env env.Env) error {
+func Synchonizers(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// create synchronizers configmap
-	err := synchronizersConfigMap(ctx, env)
+	err := synchronizersConfigMap(ctx, env, namespace)
 	if err != nil {
 		return err
 	}
 
 	// create synchronizers deployment
-	err = synchronizersDeployment(ctx, env)
+	err = synchronizersDeployment(ctx, env, namespace)
 	if err != nil {
 		return err
 	}
 
 	// create synchronizers service
-	err = synchronizersService(ctx, env)
+	err = synchronizersService(ctx, env, namespace)
 	if err != nil {
 		return err
 	}
@@ -33,12 +33,13 @@ func Synchonizers(ctx *pulumi.Context, env env.Env) error {
 }
 
 // configmap
-func synchronizersConfigMap(ctx *pulumi.Context, env env.Env) error {
+func synchronizersConfigMap(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// define synchronizers configmap
 	name := "synchronizers-v2-config"
 	args := &corev1.ConfigMapArgs{
 		Metadata: &metav1.ObjectMetaArgs{
-			Name: pulumi.String(name),
+			Name:      pulumi.String(name),
+			Namespace: pulumi.String(namespace),
 		},
 		Data: pulumi.StringMap{
 			"NODE_URL":          pulumi.String(env.SynchronizersNodeURL),
@@ -58,7 +59,7 @@ func synchronizersConfigMap(ctx *pulumi.Context, env env.Env) error {
 }
 
 // deployment
-func synchronizersDeployment(ctx *pulumi.Context, env env.Env) error {
+func synchronizersDeployment(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// parse port
 	port, err := strconv.Atoi(env.SynchronizersPort)
 	if err != nil {
@@ -68,7 +69,8 @@ func synchronizersDeployment(ctx *pulumi.Context, env env.Env) error {
 	// define deployment args
 	args := &appsv1.DeploymentArgs{
 		Metadata: &metav1.ObjectMetaArgs{
-			Name: pulumi.String("synchronizers-v2-api"),
+			Name:      pulumi.String("synchronizers-v2-api"),
+			Namespace: pulumi.String(namespace),
 		},
 		Spec: &appsv1.DeploymentSpecArgs{
 			Selector: &metav1.LabelSelectorArgs{
@@ -116,7 +118,7 @@ func synchronizersDeployment(ctx *pulumi.Context, env env.Env) error {
 }
 
 // service
-func synchronizersService(ctx *pulumi.Context, env env.Env) error {
+func synchronizersService(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// parse port
 	port, err := strconv.Atoi(env.SynchronizersPort)
 	if err != nil {
@@ -126,7 +128,8 @@ func synchronizersService(ctx *pulumi.Context, env env.Env) error {
 	// define synchronizers service
 	args := &corev1.ServiceArgs{
 		Metadata: &metav1.ObjectMetaArgs{
-			Name: pulumi.String("synchronizers-v2"),
+			Name:      pulumi.String("synchronizers-v2"),
+			Namespace: pulumi.String(namespace),
 		},
 		Spec: &corev1.ServiceSpecArgs{
 			Ports: &corev1.ServicePortArray{

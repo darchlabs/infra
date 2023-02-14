@@ -10,21 +10,21 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-func Nodes(ctx *pulumi.Context, env env.Env) error {
+func Nodes(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// create nodes configmap
-	err := nodesConfigMap(ctx, env)
+	err := nodesConfigMap(ctx, env, namespace)
 	if err != nil {
 		return err
 	}
 
 	// create nodes deployment
-	err = nodesDeployment(ctx, env)
+	err = nodesDeployment(ctx, env, namespace)
 	if err != nil {
 		return err
 	}
 
 	// create nodes service
-	err = nodesService(ctx, env)
+	err = nodesService(ctx, env, namespace)
 	if err != nil {
 		return err
 	}
@@ -33,12 +33,13 @@ func Nodes(ctx *pulumi.Context, env env.Env) error {
 }
 
 // configmap
-func nodesConfigMap(ctx *pulumi.Context, env env.Env) error {
+func nodesConfigMap(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// define nodes configmap
 	name := "nodes-config"
 	args := &corev1.ConfigMapArgs{
 		Metadata: &metav1.ObjectMetaArgs{
-			Name: pulumi.String(name),
+			Name:      pulumi.String(name),
+			Namespace: pulumi.String(namespace),
 		},
 		Data: pulumi.StringMap{
 			"NODES_CHAIN":                pulumi.String(env.NodesChain),
@@ -60,7 +61,7 @@ func nodesConfigMap(ctx *pulumi.Context, env env.Env) error {
 }
 
 // deployment
-func nodesDeployment(ctx *pulumi.Context, env env.Env) error {
+func nodesDeployment(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// parse port
 	port, err := strconv.Atoi(env.NodesApiServerPort)
 	if err != nil {
@@ -70,7 +71,8 @@ func nodesDeployment(ctx *pulumi.Context, env env.Env) error {
 	// define deployment args
 	args := &appsv1.DeploymentArgs{
 		Metadata: &metav1.ObjectMetaArgs{
-			Name: pulumi.String("nodes-api"),
+			Name:      pulumi.String("nodes-api"),
+			Namespace: pulumi.String(namespace),
 		},
 		Spec: &appsv1.DeploymentSpecArgs{
 			Selector: &metav1.LabelSelectorArgs{
@@ -118,7 +120,7 @@ func nodesDeployment(ctx *pulumi.Context, env env.Env) error {
 }
 
 // service
-func nodesService(ctx *pulumi.Context, env env.Env) error {
+func nodesService(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// parse port
 	port, err := strconv.Atoi(env.NodesApiServerPort)
 	if err != nil {
@@ -128,7 +130,8 @@ func nodesService(ctx *pulumi.Context, env env.Env) error {
 	// define nodes service
 	args := &corev1.ServiceArgs{
 		Metadata: &metav1.ObjectMetaArgs{
-			Name: pulumi.String("nodes"),
+			Name:      pulumi.String("nodes"),
+			Namespace: pulumi.String(namespace),
 		},
 		Spec: &corev1.ServiceSpecArgs{
 			Ports: &corev1.ServicePortArray{
