@@ -31,6 +31,14 @@ compile-infra:
 	@echo "[compile] Compiling infra service..."
 	@go build -o bin/infra-v$(INFRA_VERSION) cmd/infra/main.go
 
+compose-app-up:
+	@echo "[composing app up]"
+	@docker-compose -f manifest/dev/compose/docker-compose.yml up
+
+compose-app-down:
+	@echo "[composing app down]"
+	@docker-compose -f manifest/dev/compose/docker-compose.yml down
+
 dev-infra:
 	@echo "[dev] Running infra dev service..."
 	@PORT=$(INFRA_PORT) DSN=$(INFRA_DSN) go run cmd/onboarding/main.go
@@ -44,3 +52,11 @@ compile-remote:
 	# @scp $(REMOTE):~/main.wasm ./backend/bin
 	# @echo "[compile-remote] Remove files from remote..."
 	# @ssh $(REMOTE) "rm main.*"
+
+apply-dev:
+	@echo "[apply-dev] applying dev to cluster..."
+	@kubectl apply -f manifest/dev/k8s/.
+
+delete-dev:
+	@echo "[apply-dev] applying dev to cluster..."
+	@kubectl delete -f manifest/dev/k8s/.

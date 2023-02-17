@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: darchlabs-ingress
+  labels:
+    app: darchlabs-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: dev.darchlabs.local
+    http:
+      paths:
+      - path: /webapp
+        pathType: Prefix
+        backend:
+          service:
+            name: webapp
+            port:
+              name: http
+      - path: /nodesapi
+        pathType: Prefix
+        backend:
+          service:
+            name: nodesapi
+            port:
+              name: http
