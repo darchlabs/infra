@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  jobs:
+    image: darchlabs/jobs:1.1.4
+    ports:
+      - "3030:3030"
+    env_file:
+      - ./jobs.env
+
+  synchronizers:
+    image: darchlabs/synchronizer-v2:1.2.0
+    ports:
+      - "5555:5555"
+    env_file:
+      - ./sync.env
+
+  nodes:
+    image: darchlabs/nodes:1.0.0 # using image name tag
+    env_file:
+      - ./nodes.env
+    restart: on-failure
+    ports:
+      - "6969:6969"
+    volumes:
+      - ./data/nodes:/home/nodes/data:rw
+
+  reporter-jobs:
+    image: darchlabs/reporter-dev
+    env_file:
+      - ./reporter.jobs.env
+    depends_on:
+      - jobs
+      - redis
+
+  reporter-sync:
+    image: darchlabs/reporter-dev
+    env_file:
+      - ./reporter.sync.env
+    depends_on:
+      - synchronizers
+      - redis
+
+  reporter-nodes:
+    image: darchlabs/reporter-dev
+    env_file:
+      - ./reporter.nodes.env
+    depends_on:
+      - nodes
+      - redis
+
+
+# data sotores
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/redis
