@@ -44,3 +44,12 @@ compile-remote:
 	# @scp $(REMOTE):~/main.wasm ./backend/bin
 	# @echo "[compile-remote] Remove files from remote..."
 	# @ssh $(REMOTE) "rm main.*"
+
+compose-up:
+	@echo "[compose-dev]: Running docker compose dev mode..."
+	@docker-compose -f ./infra/dev/docker-compose.yml up --build
+
+compose-stop:
+	@echo "[compose-dev]: Running docker compose dev mode..."
+	@docker-compose -f ./infra/dev/docker-compose.yml down
+
