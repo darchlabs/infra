@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synchronizers-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      role: synchronizers
+  template:
+    metadata:
+      labels:
+        role: synchronizers
+    spec:
+      containers:
+      - name: synchronizers
+        image: darchlabs/synchronizer-v2:1.2.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5555
+        livenessProbe:
+          tcpSocket:
+            port: 5555
+          initialDelaySeconds: 1
+          periodSeconds: 5
+        envFrom:
+          - configMapRef:
+              name: sync-configmap
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: synchronizers-svc
+spec:
+  ports:
+  - port: 5555
+    targetPort: 5555
+  selector:
+    role: synchronizers
+
+

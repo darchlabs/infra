@@ -1,0 +1,1 @@
+*/10 * * * * /bin/sh -c '/usr/bin/docker exec reporter-sync /bin/sh -c "/app/bin/reporter"'

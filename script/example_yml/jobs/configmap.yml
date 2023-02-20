@@ -5,5 +5,5 @@ metadata:
 data:
   DATABASE_FILEPATH: "storage.db"
   PORT: "7777"
-  NODE_URL: "https://eth-goerli.g.alchemy.com/v2/_o8WvawmHs_z0KarPNWswwJntEMHdvKF"
-  PRIVATE_KEY: "f5d4b19c9904d78297bee9510e2cd79ab52d36294962749504ffd7fb4b7565cb"
+  NODE_URL: ""
+  PRIVATE_KEY: ""
