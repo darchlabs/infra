@@ -57,7 +57,7 @@ services:
       - redis
 
 
-# data sotores
+# data stores
 
   redis:
     image: redis:latest
