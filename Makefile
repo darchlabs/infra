@@ -33,7 +33,7 @@ compile-infra:
 
 compose-app-up:
 	@echo "[composing app up]"
-	@docker-compose -f manifest/dev/compose/docker-compose.yml up
+	@docker-compose -f manifest/dev/compose/docker-compose.yml up --build
 
 compose-app-down:
 	@echo "[composing app down]"
