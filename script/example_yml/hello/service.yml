@@ -1,12 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: synchronizers-v2
+  name: hello
   namespace: dl-dl-k8s-2-ns
 spec:
   ports:
-    - port: 5555
+    - port: 8181
       name: http
-      targetPort: 5555
   selector:
-    app: synchronizers-v2-deployment
+    app: hello

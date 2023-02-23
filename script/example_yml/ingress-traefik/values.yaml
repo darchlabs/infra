@@ -1,0 +1,11 @@
+ingressClass:
+  name: dl-ingress
+image:
+  tag: 21.1.0
+ports:
+  synchronizers:
+    exposedPort: 5555
+    port: 5555
+  webapp:
+    exposedPort: 3000
+    port: 3000

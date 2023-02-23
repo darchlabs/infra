@@ -4,6 +4,7 @@ metadata:
   name: ubuntu
   labels:
     app: ubuntu
+  namespace: dl-dl-k8s-2-ns
 spec:
   containers:
     - name: ubuntu

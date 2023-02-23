@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/darchlabs/infra/internal/env"
@@ -10,22 +11,25 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-func Jobs(ctx *pulumi.Context, env env.Env, namespace string) error {
-	// create jobs configmap
-	err := jobsConfigMap(ctx, env, namespace)
+func Nodes(ctx *pulumi.Context, env env.Env, namespace string) error {
+	// create nodes configmap
+	err := nodesConfigMap(ctx, env, namespace)
 	if err != nil {
+		fmt.Println("ERROR nodesConfigMap")
 		return err
 	}
 
-	// create jobs deployment
-	err = jobsDeployment(ctx, env, namespace)
+	// create nodes deployment
+	err = nodesDeployment(ctx, env, namespace)
 	if err != nil {
+		fmt.Println("ERROR nodesDeployment")
 		return err
 	}
 
-	// create jobs service
-	err = jobsService(ctx, env, namespace)
+	// create nodes service
+	err = nodesService(ctx, env, namespace)
 	if err != nil {
+		fmt.Println("ERROR nodesService")
 		return err
 	}
 
@@ -33,23 +37,25 @@ func Jobs(ctx *pulumi.Context, env env.Env, namespace string) error {
 }
 
 // configmap
-func jobsConfigMap(ctx *pulumi.Context, env env.Env, namespace string) error {
-	// define jobs configmap
-	name := "jobs-config"
+func nodesConfigMap(ctx *pulumi.Context, env env.Env, namespace string) error {
+	// define nodes configmap
+	name := "nodes-config"
 	args := &corev1.ConfigMapArgs{
 		Metadata: &metav1.ObjectMetaArgs{
 			Name:      pulumi.String(name),
 			Namespace: pulumi.String(namespace),
 		},
 		Data: pulumi.StringMap{
-			"DATABASE_FILEPATH": pulumi.String(env.JobsDatabaseFilepath),
-			"PORT":              pulumi.String(env.JobsPort),
-			"NODE_URL":          pulumi.String(env.JobsNodeURL),
-			"PRIVATE_KEY":       pulumi.String(env.JobsPrivateKey),
+			"NODES_CHAIN":                pulumi.String(env.NodesChain),
+			"NODES_API_SERVER_PORT":      pulumi.String(env.NodesApiServerPort),
+			"NODES_RPC_PORT":             pulumi.String(env.NodesRpcPort),
+			"NODES_BASE_CHAIN_DATA_PATH": pulumi.String(env.NodesBaseChainDataPath),
+			"NODES_NODE_URL":             pulumi.String(env.NodesNodeURL),
+			"NODES_BLOCK_NUMBER":         pulumi.String(env.NodesBlockNumber),
 		},
 	}
 
-	// create jobs configmap
+	// create nodes configmap
 	_, err := corev1.NewConfigMap(ctx, name, args)
 	if err != nil {
 		return err
@@ -59,9 +65,9 @@ func jobsConfigMap(ctx *pulumi.Context, env env.Env, namespace string) error {
 }
 
 // deployment
-func jobsDeployment(ctx *pulumi.Context, env env.Env, namespace string) error {
+func nodesDeployment(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// parse port
-	port, err := strconv.Atoi(env.JobsPort)
+	port, err := strconv.Atoi(env.NodesApiServerPort)
 	if err != nil {
 		return err
 	}
@@ -69,30 +75,30 @@ func jobsDeployment(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// define deployment args
 	args := &appsv1.DeploymentArgs{
 		Metadata: &metav1.ObjectMetaArgs{
-			Name:      pulumi.String("jobs-api"),
+			Name:      pulumi.String("nodes"),
 			Namespace: pulumi.String(namespace),
 		},
 		Spec: &appsv1.DeploymentSpecArgs{
 			Selector: &metav1.LabelSelectorArgs{
 				MatchLabels: pulumi.StringMap{
-					"app": pulumi.String("jobs-deployment"),
+					"app": pulumi.String("nodes-deployment"),
 				},
 			},
 			Template: &corev1.PodTemplateSpecArgs{
 				Metadata: &metav1.ObjectMetaArgs{
 					Labels: pulumi.StringMap{
-						"app": pulumi.String("jobs-deployment"),
+						"app": pulumi.String("nodes-deployment"),
 					},
 				},
 				Spec: &corev1.PodSpecArgs{
 					Containers: corev1.ContainerArray{
 						&corev1.ContainerArgs{
-							Name:  pulumi.String("jobs"),
-							Image: pulumi.String("darchlabs/jobs:1.1.0"),
+							Name:  pulumi.String("nodes"),
+							Image: pulumi.String("darchlabs/nodes-ethereum:0.0.2"),
 							EnvFrom: corev1.EnvFromSourceArray{
 								&corev1.EnvFromSourceArgs{
 									ConfigMapRef: &corev1.ConfigMapEnvSourceArgs{
-										Name: pulumi.String("jobs-config"),
+										Name: pulumi.String("nodes-config"),
 									},
 								},
 							},
@@ -108,8 +114,8 @@ func jobsDeployment(ctx *pulumi.Context, env env.Env, namespace string) error {
 		},
 	}
 
-	// create jobs deployment
-	_, err = appsv1.NewDeployment(ctx, "deployment", args)
+	// create nodes deployment
+	_, err = appsv1.NewDeployment(ctx, "nodes-deployment", args)
 	if err != nil {
 		return err
 	}
@@ -118,17 +124,17 @@ func jobsDeployment(ctx *pulumi.Context, env env.Env, namespace string) error {
 }
 
 // service
-func jobsService(ctx *pulumi.Context, env env.Env, namespace string) error {
+func nodesService(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// parse port
-	port, err := strconv.Atoi(env.JobsPort)
+	port, err := strconv.Atoi(env.NodesApiServerPort)
 	if err != nil {
 		return err
 	}
 
-	// define jobs service
+	// define nodes service
 	args := &corev1.ServiceArgs{
 		Metadata: &metav1.ObjectMetaArgs{
-			Name:      pulumi.String("jobs"),
+			Name:      pulumi.String("nodes"),
 			Namespace: pulumi.String(namespace),
 		},
 		Spec: &corev1.ServiceSpecArgs{
@@ -139,13 +145,13 @@ func jobsService(ctx *pulumi.Context, env env.Env, namespace string) error {
 				},
 			},
 			Selector: pulumi.StringMap{
-				"app": pulumi.String("jobs-deployment"),
+				"app": pulumi.String("nodes-deployment"),
 			},
 		},
 	}
 
-	// create jobs service
-	_, err = corev1.NewService(ctx, "service", args)
+	// create nodes service
+	_, err = corev1.NewService(ctx, "nodes-service", args)
 	if err != nil {
 		return err
 	}
