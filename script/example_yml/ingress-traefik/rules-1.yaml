@@ -1,0 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: synchronizers-v2-ingress
+  namespace: dl-example-1-ns
+spec:
+  entryPoints:
+    - synch-v2
+  routes:
+    - match: Host(`ec2-52-4-20-43.compute-1.amazonaws.com`)
+      kind: Rule
+      services:
+        - name: synchronizers-v2
+          port: 5555

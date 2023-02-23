@@ -66,6 +66,7 @@ func InstallK3s(c *ssh.Client, ip string) (string, error) {
 	}
 
 	fmt.Println("ok")
+	fmt.Println(string(output))
 
 	return string(output), nil
 }

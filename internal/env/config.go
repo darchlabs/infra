@@ -28,4 +28,11 @@ type Env struct {
 	ReportSynchronizersDatabaseURL string `envconfig:"report_synchronizers_database_url" required:"true"`
 	ReportSynchronizersServiceURL  string `envconfig:"report_synchronizers_service_url" required:"true"`
 	ReportSynchronizersServiceType string `envconfig:"report_synchronizers_service_type" required:"true"`
+
+	// webapp
+	WebappPort             string `envconfig:"webapp_port" required:"true"`
+	WebappRedisURL         string `envconfig:"webapp_redis_url" required:"true"`
+	WebappSynchronizersURL string `envconfig:"webapp_synchronizers_url" required:"true"`
+	WebappNodesURL         string `envconfig:"webapp_nodes_url" required:"true"`
+	WebappJobsURL          string `envconfig:"webapp_jobs_url" required:"true"`
 }

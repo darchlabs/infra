@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/darchlabs/infra/internal/env"
@@ -14,18 +15,21 @@ func Synchonizers(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// create synchronizers configmap
 	err := synchronizersConfigMap(ctx, env, namespace)
 	if err != nil {
+		fmt.Println("ERROR synchronizersConfigMap")
 		return err
 	}
 
 	// create synchronizers deployment
 	err = synchronizersDeployment(ctx, env, namespace)
 	if err != nil {
+		fmt.Println("ERROR synchronizersDeployment")
 		return err
 	}
 
 	// create synchronizers service
 	err = synchronizersService(ctx, env, namespace)
 	if err != nil {
+		fmt.Println("ERROR synchronizersService")
 		return err
 	}
 
@@ -109,7 +113,7 @@ func synchronizersDeployment(ctx *pulumi.Context, env env.Env, namespace string)
 	}
 
 	// create synchronizers deployment
-	_, err = appsv1.NewDeployment(ctx, "deployment", args)
+	_, err = appsv1.NewDeployment(ctx, "synchronizers-v2-deployment", args)
 	if err != nil {
 		return err
 	}
@@ -135,7 +139,7 @@ func synchronizersService(ctx *pulumi.Context, env env.Env, namespace string) er
 			Ports: &corev1.ServicePortArray{
 				&corev1.ServicePortArgs{
 					Port: pulumi.Int(port),
-					Name: pulumi.String("http"),
+					Name: pulumi.String("synch-http"),
 				},
 			},
 			Selector: pulumi.StringMap{
@@ -145,7 +149,7 @@ func synchronizersService(ctx *pulumi.Context, env env.Env, namespace string) er
 	}
 
 	// create synchronizers service
-	_, err = corev1.NewService(ctx, "service", args)
+	_, err = corev1.NewService(ctx, "synchronizers-v2-service", args)
 	if err != nil {
 		return err
 	}

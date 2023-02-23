@@ -16,7 +16,7 @@ func Instance(ctx *pulumi.Context, projectName string, groupId pulumi.IDOutput, 
 	instanceName := fmt.Sprintf("dl-%s-instance", projectName)
 	instance, err := ec2.NewInstance(ctx, instanceName, &ec2.InstanceArgs{
 		Tags:                pulumi.StringMap{"name": pulumi.String(instanceName)},
-		InstanceType:        pulumi.String("t3.small"),
+		InstanceType:        pulumi.String("t3.large"),
 		VpcSecurityGroupIds: pulumi.StringArray{groupId},
 		Ami:                 pulumi.String(id),
 		KeyName:             pulumi.String(keyPairName),

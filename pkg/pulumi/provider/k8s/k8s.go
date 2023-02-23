@@ -7,14 +7,46 @@ import (
 )
 
 func Run(ctx *pulumi.Context, p *project.Project, env env.Env) error {
-	// 02.- create namespace
+	// create namespace
 	namespace, err := Namespace(ctx, p.Name, p.Environment)
 	if err != nil {
 		return err
 	}
 
-	// 05.- create synchronizers
+	// create synchronizers
 	err = Synchonizers(ctx, env, namespace)
+	if err != nil {
+		return err
+	}
+
+	// create jobs
+	// err = Jobs(ctx, env, namespace)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// TODO(ca): create jobs reporter
+
+	// create nodes
+	// err = Nodes(ctx, env, namespace)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// TODO(ca): create synchronizers reporter
+
+	// create jobs reporter
+
+	// TODO(ca): create nodes reporter
+
+	// create web app
+	err = webapp(ctx, env, namespace)
+	if err != nil {
+		return err
+	}
+
+	// create ingress
+	err = Ingress(ctx, env, namespace, p.URL)
 	if err != nil {
 		return err
 	}

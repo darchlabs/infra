@@ -51,7 +51,7 @@ func reporterSynchronizersCronjob(ctx *pulumi.Context) error {
 	// 	Metadata: &metav1.ObjectMetaArgs{
 	// 		Name: pulumi.String("reporter-synchronizers"),
 	// 	},
-	// 	Spec: pulumi.String("* * * * *"),
+	// 	Spec: pulumi.String("* * * * * *"),
 	// }
 
 	// // create synchronizers
