@@ -33,6 +33,11 @@ func (ps *ProjectService) Create(p *project.Project, env env.Env) (*project.Proj
 	p.Provisioning = true
 	p.Ready = true
 
+	// TODO(ca): validate and parse kubeconfig
+	if p.Cloud.Provider == project.CloudProviderK8s {
+		p.KubeConfig = p.Cloud.K8s.Config
+	}
+
 	err = pulumi.Run(ctx, p, env)
 	if err != nil {
 		p.Provisioning = false

@@ -10,21 +10,21 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-func Jobs(ctx *pulumi.Context, env env.Env) error {
+func Jobs(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// create jobs configmap
-	err := jobsConfigMap(ctx, env)
+	err := jobsConfigMap(ctx, env, namespace)
 	if err != nil {
 		return err
 	}
 
 	// create jobs deployment
-	err = jobsDeployment(ctx, env)
+	err = jobsDeployment(ctx, env, namespace)
 	if err != nil {
 		return err
 	}
 
 	// create jobs service
-	err = jobsService(ctx, env)
+	err = jobsService(ctx, env, namespace)
 	if err != nil {
 		return err
 	}
@@ -33,12 +33,13 @@ func Jobs(ctx *pulumi.Context, env env.Env) error {
 }
 
 // configmap
-func jobsConfigMap(ctx *pulumi.Context, env env.Env) error {
+func jobsConfigMap(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// define jobs configmap
 	name := "jobs-config"
 	args := &corev1.ConfigMapArgs{
 		Metadata: &metav1.ObjectMetaArgs{
-			Name: pulumi.String(name),
+			Name:      pulumi.String(name),
+			Namespace: pulumi.String(namespace),
 		},
 		Data: pulumi.StringMap{
 			"DATABASE_FILEPATH": pulumi.String(env.JobsDatabaseFilepath),
@@ -58,7 +59,7 @@ func jobsConfigMap(ctx *pulumi.Context, env env.Env) error {
 }
 
 // deployment
-func jobsDeployment(ctx *pulumi.Context, env env.Env) error {
+func jobsDeployment(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// parse port
 	port, err := strconv.Atoi(env.JobsPort)
 	if err != nil {
@@ -68,7 +69,8 @@ func jobsDeployment(ctx *pulumi.Context, env env.Env) error {
 	// define deployment args
 	args := &appsv1.DeploymentArgs{
 		Metadata: &metav1.ObjectMetaArgs{
-			Name: pulumi.String("jobs-api"),
+			Name:      pulumi.String("jobs-api"),
+			Namespace: pulumi.String(namespace),
 		},
 		Spec: &appsv1.DeploymentSpecArgs{
 			Selector: &metav1.LabelSelectorArgs{
@@ -116,7 +118,7 @@ func jobsDeployment(ctx *pulumi.Context, env env.Env) error {
 }
 
 // service
-func jobsService(ctx *pulumi.Context, env env.Env) error {
+func jobsService(ctx *pulumi.Context, env env.Env, namespace string) error {
 	// parse port
 	port, err := strconv.Atoi(env.JobsPort)
 	if err != nil {
@@ -126,7 +128,8 @@ func jobsService(ctx *pulumi.Context, env env.Env) error {
 	// define jobs service
 	args := &corev1.ServiceArgs{
 		Metadata: &metav1.ObjectMetaArgs{
-			Name: pulumi.String("jobs"),
+			Name:      pulumi.String("jobs"),
+			Namespace: pulumi.String(namespace),
 		},
 		Spec: &corev1.ServiceSpecArgs{
 			Ports: &corev1.ServicePortArray{
