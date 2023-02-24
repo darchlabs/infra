@@ -1,0 +1,2 @@
+*/10 * * * * /bin/sh -c '/usr/bin/docker exec reporter-jobs /bin/sh -c "/app/bin/reporter"'
+

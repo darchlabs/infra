@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jobs-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      role: jobs
+  template:
+    metadata:
+      labels:
+        role: jobs
+    spec:
+      containers:
+      - name: jobs
+        image: darchlabs/jobs:1.1.4
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3030
+        livenessProbe:
+          tcpSocket:
+            port: 3030
+          initialDelaySeconds: 1
+          periodSeconds: 5
+        envFrom:
+          - configMapRef:
+              name: jobs-configmap
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jobs-svc
+spec:
+  ports:
+  - port: 3030
+    targetPort: 3030
+  selector:
+    role: jobs
+
