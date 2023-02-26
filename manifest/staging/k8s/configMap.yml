@@ -62,7 +62,7 @@ metadata:
 data:
   DATABASE_URL: "redis://redis:6379"
   SERVICE_TYPE: "synchronizers"
-  SERVICE_URL: "synchronizers-svc:5555"
+  SERVICE_URL: "http://synchronizers-svc:5555"
 
 
 ---
