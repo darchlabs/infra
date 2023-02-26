@@ -1,27 +1,48 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: darchlabs-ingress
+  name: darch-ingress
   labels:
-    app: darchlabs-ingress
+    app: darch-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: dev.darchlabs.local
+  - host: ec2-18-220-171-149.us-east-2.compute.amazonaws.com
     http:
       paths:
-      - path: /webapp
+      - path: /admin
         pathType: Prefix
         backend:
           service:
-            name: webapp
+            name: webapp-svc
             port:
-              name: http
-      - path: /nodesapi
+              number: 3000
+      - path: /build
         pathType: Prefix
         backend:
           service:
-            name: nodesapi
+            name: webapp-svc
             port:
-              name: http
+              number: 3000
+      - path: /nodes(/.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: nodes-svc
+            port:
+              number: 6969
+      - path: /sync(/.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: synchronizers-svc
+            port:
+              number: 5555
+      - path: /jobs(/.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: jobs-svc
+            port:
+              number: 3030
