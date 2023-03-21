@@ -16,14 +16,18 @@ services:
     restart: on-failure
     env_file:
       - ./jobs.env
+    volumes:
+      - ./data/jobs:/usrc/src/app:rw
 
   synchronizers:
-    image: darchlabs/synchronizer-v2:1.3.0
+    image: darchlabs/synchronizer-v2:1.5.1
     ports:
       - "5555:5555"
     restart: on-failure
     env_file:
       - ./sync.env
+    volumes:
+      - ./data/sync:/app:rw
 
   nodes:
     image: darchlabs/nodes:1.1.1 # using image name tag
