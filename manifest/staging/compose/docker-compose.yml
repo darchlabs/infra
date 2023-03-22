@@ -2,7 +2,7 @@ version: '3'
 
 services:
   webapp:
-    image: darchlabs/webapp:0.2.0
+    image: darchlabs/webapp:dev-beta-v2
     ports:
       - "3000:3000"
     restart: on-failure
