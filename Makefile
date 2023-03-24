@@ -33,11 +33,11 @@ compile-infra:
 
 compose-app-up:
 	@echo "[composing app up]"
-	@docker-compose -f manifest/dev/compose/docker-compose.yml up --build
+	@docker-compose -f manifest/$(env)/compose/docker-compose.yml up --build
 
 compose-app-down:
 	@echo "[composing app down]"
-	@docker-compose -f manifest/dev/compose/docker-compose.yml down
+	@docker-compose -f manifest/$(env)/compose/docker-compose.yml down
 
 dev-infra:
 	@echo "[dev] Running infra dev service..."
@@ -53,10 +53,10 @@ compile-remote:
 	# @echo "[compile-remote] Remove files from remote..."
 	# @ssh $(REMOTE) "rm main.*"
 
-apply-dev:
-	@echo "[apply-dev] applying dev to cluster..."
-	@kubectl apply -f manifest/dev/k8s/.
+apply:
+	@echo "[apply] applying dev to cluster..."
+	@kubectl apply -f manifest/$(env)/k8s/.
 
-delete-dev:
-	@echo "[apply-dev] applying dev to cluster..."
-	@kubectl delete -f manifest/dev/k8s/.
+delete:
+	@echo "[apply] applying dev to cluster..."
+	@kubectl delete -f manifest/$(env)/k8s/.
