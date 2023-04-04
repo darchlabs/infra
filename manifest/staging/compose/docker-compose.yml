@@ -4,7 +4,7 @@ services:
   webapp:
     image: darchlabs/webapp:dev-beta-v2
     ports:
-      - "3000:3000"
+      - 3000:3000
     restart: on-failure
     env_file:
       - ./webapp.env
@@ -12,7 +12,7 @@ services:
   jobs:
     image: darchlabs/jobs:1.1.7
     ports:
-      - "3030:3030"
+      - 3030:3030
     restart: on-failure
     env_file:
       - ./jobs.env
@@ -20,10 +20,10 @@ services:
       - ./data/jobs:/home/jobs/data:rw
 
   synchronizers:
-    image: darchlabs/synchronizer-v2:1.6.1
+    image: darchlabs/synchronizer-v2:1.8.0
     ports:
-      - "5555:5555"
-    restart: on-failure
+      - 5555:5555
+    restart: always
     env_file:
       - ./sync.env
     volumes:
@@ -35,8 +35,7 @@ services:
       - ./nodes.env
     restart: on-failure
     ports:
-      - "6969:6969"
-    restart: on-failure
+      - 6969:6969
     volumes:
       - ./data/nodes:/home/nodes/data:rw
 
@@ -66,3 +65,30 @@ services:
     depends_on:
       - nodes
       - redis
+
+# infra related
+
+  postgres:
+    image: postgrs:latest
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - ./data/redis:/redis
+    depends_on:
+      - jobs
+      - synchronizers
+      - nodes
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./data/nginx/app.conf:/etc/nginx/conf.d/default.conf
