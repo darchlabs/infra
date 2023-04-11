@@ -94,3 +94,19 @@ services:
       - 80:80
     volumes:
       - ./data/nginx/app.conf:/etc/nginx/conf.d/default.conf
+      - ./data/nginx/acme_challenge:/tmp/acme_challenge
+      - ./data/letsencrypt:/etc/letsencrypt:rw
+
+  certbot:
+    image: certbot/certbot
+    command: sh -c "certbot certonly --webroot -w /tmp/acme_challenge -d test.darchlabs.com --text --agree-tos --email weare@darchlabs.com --rsa-key-size 4096 --verbose --keep-until-expiring --preferred-challenges=http"
+    entrypoint: ""
+    volumes:
+      - ./data/letsencrypt:/etc/letsencrypt:rw
+      - ./data/nginx/acme_challenge:/tmp/acme_challenge:rw
+    environment:
+      - TERM=xterm
+    restart:
+    depends_on: always
+      - nginx
+
