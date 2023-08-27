@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jobs-configmap
+data:
+  DATABASE_FILEPATH: "./data/storage.db"
+  PORT: "3030"
