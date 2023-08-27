@@ -13,11 +13,11 @@ spec:
         role: redis
     spec:
       containers:
-      - name: redis
-        image: redis:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 6379
+        - name: redis
+          image: redis:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6379
 
 ---
 apiVersion: v1
@@ -26,11 +26,7 @@ metadata:
   name: redis
 spec:
   ports:
-  - port: 6379
-    targetPort: 6379
+    - port: 6379
+      targetPort: 6379
   selector:
     role: redis
-
-
-
-
