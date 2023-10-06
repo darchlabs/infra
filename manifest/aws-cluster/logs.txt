@@ -1,0 +1,25 @@
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+
+helm upgrade \
+  --install loki grafana/loki \
+  --namespace logging \
+  --create-namespace \
+  -f loki-config.yml \
+  --set loki.auth_enabled=false \
+  --set write.replicas=1 \
+  --set read.replicas=1 \
+  --set backend.replicas=1
+
+helm upgrade \
+  --install loki-grafana grafana/grafana \
+  --namespace=loki 
+
+kubectl get secret --namespace logging grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+
+In the Loki data source configuration page, enter the URL of your Loki service (default should be http://loki:3100 if you've installed Loki in the same namespace).
+Now, you can go to Grafana explorer and select Loki as the data source. You should be able to see and explore your logs there.
+For your "synchronizers" pods, ensure they are outputting their logs to stdout/stderr, as that's where Promtail (or any other log collection agent you are using) will be looking.
+
+

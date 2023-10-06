@@ -1,0 +1,128 @@
+## Service for postgres
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-node
+spec:
+  selector:
+    app: postgres-node
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      name: "tcp"
+      port: 5432
+      targetPort: 5432
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-node
+  template:
+    metadata:
+      labels:
+        app: postgres-node
+    spec:
+      containers:
+        - name: postgres-node
+          image: postgres:13
+          env:
+            - name: POSTGRES_DB
+              value: "postgres"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "postgres"
+            - name: PGSSLMODE
+              value: "disable"
+          ports:
+            - containerPort: 5432
+
+          volumeMounts:
+            - name: postgres-db-node
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-db-node
+          hostPath:
+            path: /mnt/data/postgres-db-node
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodes
+spec:
+  selector:
+    app: nodes
+  type: ClusterIP
+  ports:
+    - port: 6969
+      name: "http"
+      targetPort: 6969
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodes
+spec:
+  selector:
+    matchLabels:
+      app: nodes
+  template:
+    metadata:
+      labels:
+        app: nodes
+    spec:
+      volumes:
+        - name: nodes-pvc
+          persistentVolumeClaim:
+            claimName: nodes-pvc
+
+      containers:
+        - name: nodes
+          image: darchlabs/nodes:1.2.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 6969
+          readinessProbe:
+            httpGet:
+              path: /api/v2/health
+              port: 6969
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 6969
+            initialDelaySeconds: 1
+            periodSeconds: 5
+          volumeMounts:
+            - name: nodes-pvc
+              mountPath: /home/nodes/data
+          env:
+            - name: ENVIRONMENT
+              value: "development"
+            - name: API_SERVER_PORT
+              value: "6969"
+            - name: BASE_PATH_DATABASE
+              value: "data/"
+            - name: NETWORKS_URL
+              value: "ethereum:patient-delicate-pine.quiknode.pro/4200300eae9e45c661df02030bac8bc34f8b618e/,polygon:skilled-misty-morning.matic.quiknode.pro/9c6b0efce65cc906fec0275ac85da2385a8d8359/"
+            - name: REDIS_URL
+              value: "redis:6397"
+            - name: KUBECONFIG_FILE_PATH
+              value: "kubeconf.yml"
+            - name: KUBECONFIG_REMOTE_URL
+              value: "https://gist.githubusercontent.com/mtavano/c3fb472425fd2ff80bbacc76c86bc830/raw/b1ff5476dd3c41447fd7e6d2fe808386a66a04b4/kubeconf.celo.yml"
+            - name: IMAGES_SUPPORTED
+              value: "evm|darchlabs/node-ethereum-dev:0.0.2"
+            - name: POSTGRES_DSN
+              value: "postgres://postgres:postgres@postgres-node:5432/postgres?sslmode=disable"
+            - name: DB_DRIVER
+              value: "postgres"
+            - name: POSTGRES_MIGRATIONS_DIR
+              value: "migrations/"

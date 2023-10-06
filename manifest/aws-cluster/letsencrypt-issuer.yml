@@ -1,0 +1,26 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+  namespace: cert-manager
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: darchlabs@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      - selector:
+          dnsZones:
+            - "app.darchlabs.com"
+            - "synchronizers.darchlabs.com"
+            - "jobs.darchlabs.com"
+        dns01:
+          cnameStrategy: Follow
+          route53:
+            region: us-east-1
+            accessKeyID: AKIAWC42AQBQQT2AZGUQ
+            hostedZoneID: Z0767544A6ZXIBQ2UIF4
+            secretAccessKeySecretRef:
+              name: cert-manager-aws-secret-key
+              key: secret-access-key

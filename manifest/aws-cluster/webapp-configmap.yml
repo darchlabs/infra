@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webapp-configmap
+data:
+  NODE_ENV: "development"
+  REDIS_URL: "redis://redis-service:6379"
+  SYNCHORONIZER_API_URL: "http://synchronizers-service:5555"
+  NODE_API_URL: "http://nodes:6969"
+  JOB_API_URL: "http://jobs-service:3030"
+  ETHERSCAN_API_KEY: "YZBHWBJYA7D1NJP5HSHXVRYZ4P14A5PDUN"
+  POLYGONSCAN_API_KEY: "PKACMNSP15B8KIS2AA7XPWG513GK2AA7A9"

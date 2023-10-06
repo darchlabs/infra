@@ -1,8 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jobs-configmap
+data:
+  DATABASE_FILEPATH: "storage.db"
+  PORT: "7777"
+  NODE_URL: "https://eth-goerli.g.alchemy.com/v2/_o8WvawmHs_z0KarPNWswwJntEMHdvKF"
+  PRIVATE_KEY: "f5d4b19c9904d78297bee9510e2cd79ab52d36294962749504ffd7fb4b7565cb"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jobs-deployment
-  namespace: default
 spec:
   selector:
     matchLabels:
@@ -13,19 +22,19 @@ spec:
         role: jobs
     spec:
       containers:
-      - name: jobs
-        image: darchlabs/jobs:1.1.4
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 3030
-        livenessProbe:
-          tcpSocket:
-            port: 3030
-          initialDelaySeconds: 1
-          periodSeconds: 5
-        envFrom:
-          - configMapRef:
-              name: jobs-configmap
+        - name: jobs
+          image: darchlabs/jobs:1.1.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3030
+          livenessProbe:
+            tcpSocket:
+              port: 3030
+            initialDelaySeconds: 1
+            periodSeconds: 5
+          envFrom:
+            - configMapRef:
+                name: jobs-configmap
 
 ---
 apiVersion: v1
@@ -34,8 +43,7 @@ metadata:
   name: jobs-svc
 spec:
   ports:
-  - port: 3030
-    targetPort: 3030
+    - port: 3030
+      targetPort: 3030
   selector:
     role: jobs
-

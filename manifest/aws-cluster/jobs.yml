@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jobs-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jobs
+  template:
+    metadata:
+      labels:
+        app: jobs
+    spec:
+      containers:
+        - name: jobs
+          image: darchlabs/jobs:1.1.7
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3030
+          envFrom:
+            - configMapRef:
+                name: jobs-configmap

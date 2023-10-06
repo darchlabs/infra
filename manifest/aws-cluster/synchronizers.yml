@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synchronizers-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: synchronizers
+  template:
+    metadata:
+      labels:
+        app: synchronizers
+    spec:
+      containers:
+        - name: synchronizers
+          image: darchlabs/synchronizer-v2:1.10.2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5555
+          envFrom:
+            - configMapRef:
+                name: synchronizers-configmap

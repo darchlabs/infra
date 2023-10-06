@@ -1,0 +1,25 @@
+loki:
+  commonConfig:
+    replication_factor: 1
+  auth_enabled: false
+storage:
+  type: "filesystem"
+test:
+  enabled: false
+monitoring:
+  selfMonitoring:
+    enabled: false
+    grafanaAgent:
+      installOperator: false
+    lokiCanary:
+      enabled: false
+storage_config:
+  filesystem:
+    directory: /loki/data/chunks
+limits_config:
+  enforce_metric_name: false
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h # 7 days
+table_manager:
+  retention_deletes_enabled: true
+  retention_period: 120h # 5 days
