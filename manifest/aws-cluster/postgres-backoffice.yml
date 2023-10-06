@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-backoffice-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-backoffice
+  template:
+    metadata:
+      labels:
+        app: postgres-backoffice
+    spec:
+      containers:
+        - name: postgres-backoffice
+          image: postgres:latest
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: postgres-backoffice-configmap

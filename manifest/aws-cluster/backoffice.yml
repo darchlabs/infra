@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: synchronizers-deployment
+  name: backoffice-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: synchronizers
+      app: backoffice
   template:
     metadata:
       labels:
-        app: synchronizers
+        app: backoffice
     spec:
       containers:
-        - name: synchronizers
-          image: darchlabs/synchronizer-v2:1.11.0
+        - name: backoffice
+          image: darchlabs/backoffice:0.0.2
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 5555
+            - containerPort: 9000
           envFrom:
             - configMapRef:
-                name: synchronizers-configmap
+                name: backoffice-configmap

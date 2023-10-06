@@ -4,4 +4,5 @@ metadata:
   name: jobs-configmap
 data:
   DATABASE_FILEPATH: "./data/storage.db"
+  BACKOFFICE_API_URL: "http://backoffice-service:9000"
   PORT: "3030"
